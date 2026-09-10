@@ -79,6 +79,12 @@ codertarget.data.setParameterValue(m,'Runtime.BuildAction',    'Build, load and 
 - 硬件目录：`00_HW/<MCU>/<MCU>.ioc`。
 - 新增芯片/板卡：复制 `docs/03-新项目复刻清单.md` 逐项执行。
 
+## 9b. 模型连线规范
+
+- 连线必须**横平竖直**，禁止斜线直接连接。
+- 脚本中一律使用 `add_line(m,a,b,'autorouting','on')`（本仓库封装为 `al(m,a,b)`），由 Simulink 自动正交布线。
+- 布局上让信号从左到右、从上到下流动，减少交叉。
+
 ## 10. 已知硬件注意
 
 - LED 等外设请串联限流电阻（330Ω~1kΩ），避免超过 GPIO 灌电流。

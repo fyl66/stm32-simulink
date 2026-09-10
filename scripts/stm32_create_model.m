@@ -1,7 +1,7 @@
 function stm32_create_model()
 %STM32_CREATE_MODEL Build the F103_Blink Simulink model and configure the target.
 
-    projdir = 'E:\桌面\FYL\vibecoding\stm32_simulink';
+    projdir = fileparts(fileparts(mfilename('fullpath')));
     ioc     = fullfile(projdir,'00_HW','F103C8T6','F103C8T6.ioc');
     m       = 'F103_Blink';
     slx     = fullfile(projdir,[m '.slx']);
@@ -39,11 +39,11 @@ function stm32_create_model()
         'ReadOperation','off','IOAsArray','on', ...
         'Position',[220 240 320 300]);
 
-    add_line(m,'Pulse/1','GPIOC/1');
+    al(m,'Pulse/1','GPIOC/1');
     for k = 1:5
-        add_line(m,'Pulse/1',sprintf('Mux/%d',k));
+        al(m,'Pulse/1',sprintf('Mux/%d',k));
     end
-    add_line(m,'Mux/1','GPIOA/1');
+    al(m,'Mux/1','GPIOA/1');
 
     % --- Target configuration ---
     set_param(m,'HardwareBoard','STM32F1xx Based');
@@ -65,4 +65,9 @@ function stm32_create_model()
     fprintf('ProjectFile   = %s\n', codertarget.data.getParameterValue(m,'STM32CubeMX.ProjectFile'));
     fprintf('BuildAction   = %s\n', codertarget.data.getParameterValue(m,'Runtime.BuildAction'));
     close_system(m,0);
+end
+
+function al(m,a,b)
+    % Add line with orthogonal (right-angle) autorouting.
+    add_line(m,a,b,'autorouting','on');
 end

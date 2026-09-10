@@ -47,11 +47,11 @@ function vcu_create_model()
         'ReadOperation','off','IOAsArray','on');
 
     % ---- Connections ----
-    add_line(m,'ADC/1','ADC_u8/1');
-    add_line(m,'ADC_u8/1','CAN_TX_0x500/1');
-    add_line(m,'ADC_u8/1','UART_DBG/1');
-    add_line(m,'CAN_RX_0x200/1','Term/1');
-    add_line(m,'HB/1','Heartbeat/1');
+    al(m,'ADC/1','ADC_u8/1');
+    al(m,'ADC_u8/1','CAN_TX_0x500/1');
+    al(m,'ADC_u8/1','UART_DBG/1');
+    al(m,'CAN_RX_0x200/1','Term/1');
+    al(m,'HB/1','Heartbeat/1');
 
     % ---- Target configuration ----
     set_param(m,'HardwareBoard','STM32F1xx Based');
@@ -71,4 +71,9 @@ function vcu_create_model()
     fprintf('Saved %s\n', slx);
     fprintf('ProjectFile = %s\n', codertarget.data.getParameterValue(m,'STM32CubeMX.ProjectFile'));
     close_system(m,0);
+end
+
+function al(m,a,b)
+    % Add line with orthogonal (right-angle) autorouting.
+    add_line(m,a,b,'autorouting','on');
 end

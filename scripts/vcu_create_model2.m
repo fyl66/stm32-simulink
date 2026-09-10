@@ -141,26 +141,26 @@ function vcu_create_model2()
     buildStateflowChart(m,'/state_chart');
 
     % ---- Wiring ----
-    add_line(m,'ADC/1','scale_fp/1');
-    add_line(m,'scale_fp/1','ctrl_fp/1');          % v_mV
-    add_line(m,'CAN_RX_0x200/1','rx_dispatch/1');  % Data
-    add_line(m,'CAN_RX_0x200/3','rx_dispatch/2');  % Id
-    add_line(m,'rx_dispatch/1','ctrl_fp/2');       % vx_meas
-    add_line(m,'state_chart/1','ctrl_fp/3');       % state
-    add_line(m,'scale_fp/2','state_chart/1');      % throttle
-    add_line(m,'scale_fp/3','state_chart/2');      % brake
-    add_line(m,'ctrl_fp/1','pack_tq/1');           % torque
-    add_line(m,'pack_tq/1','CAN_TX_0x100/1');
-    add_line(m,'scale_fp/1','pack_st/1');          % v_mV
-    add_line(m,'state_chart/1','pack_st/2');       % state
-    add_line(m,'pack_st/1','CAN_TX_0x500/1');
-    add_line(m,'state_chart/1','pack_dbg/1');
-    add_line(m,'rx_dispatch/1','pack_dbg/2');      % vx
-    add_line(m,'scale_fp/2','pack_dbg/3');         % throttle
-    add_line(m,'pack_dbg/1','UART_DBG/1');
-    add_line(m,'pack_dbg/1','CAN_TX_0x600/1');
-    add_line(m,'DUTY50/1','BUZZER/1');
-    add_line(m,'HB/1','Heartbeat/1');
+    al(m,'ADC/1','scale_fp/1');
+    al(m,'scale_fp/1','ctrl_fp/1');          % v_mV
+    al(m,'CAN_RX_0x200/1','rx_dispatch/1');  % Data
+    al(m,'CAN_RX_0x200/3','rx_dispatch/2');  % Id
+    al(m,'rx_dispatch/1','ctrl_fp/2');       % vx_meas
+    al(m,'state_chart/1','ctrl_fp/3');       % state
+    al(m,'scale_fp/2','state_chart/1');      % throttle
+    al(m,'scale_fp/3','state_chart/2');      % brake
+    al(m,'ctrl_fp/1','pack_tq/1');           % torque
+    al(m,'pack_tq/1','CAN_TX_0x100/1');
+    al(m,'scale_fp/1','pack_st/1');          % v_mV
+    al(m,'state_chart/1','pack_st/2');       % state
+    al(m,'pack_st/1','CAN_TX_0x500/1');
+    al(m,'state_chart/1','pack_dbg/1');
+    al(m,'rx_dispatch/1','pack_dbg/2');      % vx
+    al(m,'scale_fp/2','pack_dbg/3');         % throttle
+    al(m,'pack_dbg/1','UART_DBG/1');
+    al(m,'pack_dbg/1','CAN_TX_0x600/1');
+    al(m,'DUTY50/1','BUZZER/1');
+    al(m,'HB/1','Heartbeat/1');
 
     % ---- Target configuration ----
     set_param(m,'HardwareBoard','STM32F1xx Based');
@@ -225,4 +225,9 @@ function buildStateflowChart(model, blkPath)
     t32.LabelString = '[brake <= 50 && throttle > 50] {state = uint8(1);}';
     t31 = Stateflow.Transition(ch); t31.Source=s3; t31.Destination=s1;
     t31.LabelString = '[speed <= 0 && throttle <= 50] {state = uint8(0);}';
+end
+
+function al(m,a,b)
+    % Add line with orthogonal (right-angle) autorouting.
+    add_line(m,a,b,'autorouting','on');
 end
