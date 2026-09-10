@@ -22,14 +22,14 @@ function vcu_create_model()
     set_param(m,'SystemTargetFile','ert.tlc');
 
     % ---- Add blocks (no params) ----
-    add_block(pick('Analog to Digital'),          [m '/ADC'],          'Position',[60 100 160 200]);
-    add_block('simulink/Commonly Used Blocks/Data Type Conversion',[m '/ADC_u8'],'Position',[220 130 270 170]);
-    add_block(pick('CAN Write'),                  [m '/CAN_TX_0x500'], 'Position',[340 90 440 150]);
-    add_block(pick('USART Write'),                [m '/UART_DBG'],     'Position',[340 190 440 250]);
-    add_block(pick('CAN Read'),                   [m '/CAN_RX_0x200'], 'Position',[340 300 440 360]);
-    add_block('simulink/Sinks/Terminator',        [m '/Term'],         'Position',[500 320 520 340]);
-    add_block('simulink/Sources/Pulse Generator', [m '/HB'],           'Position',[60 400 100 440]);
-    add_block(pick('Digital Port Write'),         [m '/Heartbeat'],    'Position',[160 390 260 450]);
+    add_block(pick('Analog to Digital'),          [m '/ADC'],          'Position',gpos(1,1,240,160));
+    add_block('simulink/Commonly Used Blocks/Data Type Conversion',[m '/ADC_u8'],'Position',gpos(2,1,120,80));
+    add_block(pick('CAN Write'),                  [m '/CAN_TX_0x500'], 'Position',gpos(4,1,240,160));
+    add_block(pick('USART Write'),                [m '/UART_DBG'],     'Position',gpos(4,2,240,160));
+    add_block(pick('CAN Read'),                   [m '/CAN_RX_0x200'], 'Position',gpos(1,2,240,160));
+    add_block('simulink/Sinks/Terminator',        [m '/Term'],         'Position',gpos(5,2,60,60));
+    add_block('simulink/Sources/Pulse Generator', [m '/HB'],           'Position',gpos(1,3,120,80));
+    add_block(pick('Digital Port Write'),         [m '/Heartbeat'],    'Position',gpos(2,3,240,160));
 
     % ---- Configure blocks ----
     set_param([m '/ADC'],'ADCModule','ADC1','ConversionGroup','Regular', ...
@@ -76,4 +76,12 @@ end
 function al(m,a,b)
     % Add line with orthogonal (right-angle) autorouting.
     add_line(m,a,b,'autorouting','on');
+end
+
+function p = gpos(col,row,w,h)
+    % Grid position (left->right). Generous spacing.
+    W=240; H=160; SX=100; SY=120;
+    x = 40 + (col-1)*(W+SX);
+    y = 40 + (row-1)*(H+SY);
+    p = [x y x+w y+h];
 end

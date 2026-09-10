@@ -1,7 +1,7 @@
 function vcu_create_model2()
 %VCU_CREATE_MODEL2 Create models/VCU_M2.slx (full simplified VCU).
-%   ADC(fixed-point) -> KF/ctrl -> CAN TX 0x100/0x500 ; CAN RX 0x200 ;
-%   Stateflow 3-state (Start/Drive/Brake) ; PWM buzzer ; UART debug ; heartbeat.
+%   Layout: left-to-right grid, generous spacing, orthogonal autorouting.
+%   Stateflow 3-state (Start/Drive/Brake) with actions in state entry (en:).
 
     projdir = fileparts(fileparts(mfilename('fullpath')));
     ioc     = fullfile(projdir,'00_HW','F103C8T6','VCU_F103.ioc');
@@ -20,28 +20,28 @@ function vcu_create_model2()
         'FixedStep','0.0005','StopTime','inf','SystemTargetFile','ert.tlc');
 
     % ---- STM32 peripheral blocks ----
-    add_block(pick('Analog to Digital'), [m '/ADC'],          'Position',[40 200 140 300]);
-    add_block(pick('CAN Write'),          [m '/CAN_TX_0x100'],'Position',[700 60 800 120]);
-    add_block(pick('CAN Write'),          [m '/CAN_TX_0x500'],'Position',[700 150 800 210]);
-    add_block(pick('CAN Write'),          [m '/CAN_TX_0x600'],'Position',[700 240 800 300]);
-    add_block(pick('CAN Read'),           [m '/CAN_RX_0x200'],'Position',[40 360 140 420]);
-    add_block(pick('USART Write'),        [m '/UART_DBG'],    'Position',[700 300 800 360]);
-    add_block(pick('PWM Output'),         [m '/BUZZER'],      'Position',[700 420 800 480]);
-    add_block(pick('Digital Port Write'), [m '/Heartbeat'],   'Position',[200 500 300 560]);
-    add_block('simulink/Sources/Pulse Generator',[m '/HB'],   'Position',[40 500 80 540]);
-    add_block('simulink/Sources/Constant',[m '/DUTY50'],      'Position',[560 430 620 460]);
+    add_block(pick('Analog to Digital'), [m '/ADC'],          'Position',gpos(1,1,240,160));
+    add_block(pick('CAN Write'),          [m '/CAN_TX_0x100'],'Position',gpos(5,1,240,160));
+    add_block(pick('CAN Write'),          [m '/CAN_TX_0x500'],'Position',gpos(5,2,240,160));
+    add_block(pick('CAN Write'),          [m '/CAN_TX_0x600'],'Position',gpos(5,3,240,160));
+    add_block(pick('CAN Read'),           [m '/CAN_RX_0x200'],'Position',gpos(1,2,240,160));
+    add_block(pick('USART Write'),        [m '/UART_DBG'],    'Position',gpos(6,3,240,160));
+    add_block(pick('PWM Output'),         [m '/BUZZER'],      'Position',gpos(5,4,240,160));
+    add_block(pick('Digital Port Write'), [m '/Heartbeat'],   'Position',gpos(2,3,240,160));
+    add_block('simulink/Sources/Pulse Generator',[m '/HB'],   'Position',gpos(1,3,120,80));
+    add_block('simulink/Sources/Constant',[m '/DUTY50'],      'Position',gpos(4,4,120,80));
 
     % ---- MATLAB Function blocks ----
     mf = 'simulink/User-Defined Functions/MATLAB Function';
-    add_block(mf,[m '/scale_fp'],'Position',[200 200 320 280]);
-    add_block(mf,[m '/ctrl_fp'], 'Position',[420 180 540 280]);
-    add_block(mf,[m '/pack_tq'], 'Position',[600 60 680 120]);
-    add_block(mf,[m '/pack_st'], 'Position',[600 150 680 210]);
-    add_block(mf,[m '/rx_dispatch'],'Position',[200 350 320 430]);
-    add_block(mf,[m '/pack_dbg'],'Position',[420 320 540 380]);
+    add_block(mf,[m '/scale_fp'], 'Position',gpos(2,1,240,140));
+    add_block(mf,[m '/ctrl_fp'],  'Position',gpos(3,1,240,140));
+    add_block(mf,[m '/pack_tq'],  'Position',gpos(4,1,240,140));
+    add_block(mf,[m '/pack_st'],  'Position',gpos(4,2,240,140));
+    add_block(mf,[m '/rx_dispatch'],'Position',gpos(2,2,240,140));
+    add_block(mf,[m '/pack_dbg'], 'Position',gpos(4,3,240,140));
 
     % ---- Stateflow chart ----
-    add_block('sflib/Chart',[m '/state_chart'],'Position',[420 420 560 520]);
+    add_block('sflib/Chart',[m '/state_chart'],'Position',gpos(3,2,300,240));
 
     % ---- Configure peripheral blocks ----
     set_param([m '/ADC'],'ADCModule','ADC1','ConversionGroup','Regular', ...
@@ -140,23 +140,23 @@ function vcu_create_model2()
     % ---- Stateflow chart ----
     buildStateflowChart(m,'/state_chart');
 
-    % ---- Wiring ----
+    % ---- Wiring (orthogonal autorouting) ----
     al(m,'ADC/1','scale_fp/1');
-    al(m,'scale_fp/1','ctrl_fp/1');          % v_mV
-    al(m,'CAN_RX_0x200/1','rx_dispatch/1');  % Data
-    al(m,'CAN_RX_0x200/3','rx_dispatch/2');  % Id
-    al(m,'rx_dispatch/1','ctrl_fp/2');       % vx_meas
-    al(m,'state_chart/1','ctrl_fp/3');       % state
-    al(m,'scale_fp/2','state_chart/1');      % throttle
-    al(m,'scale_fp/3','state_chart/2');      % brake
-    al(m,'ctrl_fp/1','pack_tq/1');           % torque
+    al(m,'scale_fp/1','ctrl_fp/1');
+    al(m,'CAN_RX_0x200/1','rx_dispatch/1');
+    al(m,'CAN_RX_0x200/3','rx_dispatch/2');
+    al(m,'rx_dispatch/1','ctrl_fp/2');
+    al(m,'state_chart/1','ctrl_fp/3');
+    al(m,'scale_fp/2','state_chart/1');
+    al(m,'scale_fp/3','state_chart/2');
+    al(m,'ctrl_fp/1','pack_tq/1');
     al(m,'pack_tq/1','CAN_TX_0x100/1');
-    al(m,'scale_fp/1','pack_st/1');          % v_mV
-    al(m,'state_chart/1','pack_st/2');       % state
+    al(m,'scale_fp/1','pack_st/1');
+    al(m,'state_chart/1','pack_st/2');
     al(m,'pack_st/1','CAN_TX_0x500/1');
     al(m,'state_chart/1','pack_dbg/1');
-    al(m,'rx_dispatch/1','pack_dbg/2');      % vx
-    al(m,'scale_fp/2','pack_dbg/3');         % throttle
+    al(m,'rx_dispatch/1','pack_dbg/2');
+    al(m,'scale_fp/2','pack_dbg/3');
     al(m,'pack_dbg/1','UART_DBG/1');
     al(m,'pack_dbg/1','CAN_TX_0x600/1');
     al(m,'DUTY50/1','BUZZER/1');
@@ -179,6 +179,14 @@ function vcu_create_model2()
     save_system(m,slx);
     fprintf('Saved %s\n', slx);
     close_system(m,0);
+end
+
+function p = gpos(col,row,w,h)
+    % Grid position (left->right). Generous spacing.
+    W=240; H=160; SX=100; SY=120;
+    x = 40 + (col-1)*(W+SX);
+    y = 40 + (row-1)*(H+SY);
+    p = [x y x+w y+h];
 end
 
 function setEmScript(model, blkPath, script)
@@ -208,23 +216,29 @@ function buildStateflowChart(model, blkPath)
     u3 = Stateflow.Data(ch); u3.Name='speed';    u3.Scope='Input';  u3.DataType='int16';
     y1 = Stateflow.Data(ch); y1.Name='state';    y1.Scope='Output'; y1.DataType='uint8';
 
-    s1 = Stateflow.State(ch); s1.Name='Start'; s1.LabelString='Start'; s1.Position=[40 40 110 60];
-    s2 = Stateflow.State(ch); s2.Name='Drive'; s2.LabelString='Drive'; s2.Position=[220 40 110 60];
-    s3 = Stateflow.State(ch); s3.Name='Brake'; s3.LabelString='Brake'; s3.Position=[400 40 110 60];
+    % States (large boxes, generous spacing). Actions live in state entry (en:).
+    s1 = Stateflow.State(ch); s1.Name='Start';
+    s1.LabelString = sprintf('Start\nen: state = uint8(0);');
+    s1.Position=[40 80 240 120];
+    s2 = Stateflow.State(ch); s2.Name='Drive';
+    s2.LabelString = sprintf('Drive\nen: state = uint8(1);');
+    s2.Position=[400 80 240 120];
+    s3 = Stateflow.State(ch); s3.Name='Brake';
+    s3.LabelString = sprintf('Brake\nen: state = uint8(3);');
+    s3.Position=[760 80 240 120];
 
     t0 = Stateflow.Transition(ch); t0.Destination = s1;
-    t0.LabelString = 'state = uint8(0);';
 
     t12 = Stateflow.Transition(ch); t12.Source=s1; t12.Destination=s2;
-    t12.LabelString = '[throttle > 50] {state = uint8(1);}';
+    t12.LabelString = '[throttle > 50]';
     t21 = Stateflow.Transition(ch); t21.Source=s2; t21.Destination=s1;
-    t21.LabelString = '[throttle <= 50 && speed <= 0] {state = uint8(0);}';
+    t21.LabelString = '[throttle <= 50 && speed <= 0]';
     t23 = Stateflow.Transition(ch); t23.Source=s2; t23.Destination=s3;
-    t23.LabelString = '[brake > 50] {state = uint8(3);}';
+    t23.LabelString = '[brake > 50]';
     t32 = Stateflow.Transition(ch); t32.Source=s3; t32.Destination=s2;
-    t32.LabelString = '[brake <= 50 && throttle > 50] {state = uint8(1);}';
+    t32.LabelString = '[brake <= 50 && throttle > 50]';
     t31 = Stateflow.Transition(ch); t31.Source=s3; t31.Destination=s1;
-    t31.LabelString = '[speed <= 0 && throttle <= 50] {state = uint8(0);}';
+    t31.LabelString = '[speed <= 0 && throttle <= 50]';
 end
 
 function al(m,a,b)

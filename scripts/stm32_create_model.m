@@ -24,20 +24,20 @@ function stm32_create_model()
 
     add_block('simulink/Sources/Pulse Generator',[m '/Pulse'], ...
         'Amplitude','1','Period','2','PulseWidth','50','SampleTime','0.01', ...
-        'Position',[40 100 80 140]);
+        'Position',gpos(1,1,140,80));
 
     add_block('simulink/Signal Routing/Mux',[m '/Mux'], ...
-        'Inputs','5','Position',[140 60 145 180]);
+        'Inputs','5','Position',gpos(2,1,50,200));
 
     add_block('stm32blockslib/Digital Port Write',[m '/GPIOA'], ...
         'PortName','GPIOA','PinNumber','[0 1 2 3 4]', ...
         'ReadOperation','off','IOAsArray','on', ...
-        'Position',[220 50 320 190]);
+        'Position',gpos(3,1,240,200));
 
     add_block('stm32blockslib/Digital Port Write',[m '/GPIOC'], ...
         'PortName','GPIOC','PinNumber','[13]', ...
         'ReadOperation','off','IOAsArray','on', ...
-        'Position',[220 240 320 300]);
+        'Position',gpos(3,2,240,160));
 
     al(m,'Pulse/1','GPIOC/1');
     for k = 1:5
@@ -70,4 +70,12 @@ end
 function al(m,a,b)
     % Add line with orthogonal (right-angle) autorouting.
     add_line(m,a,b,'autorouting','on');
+end
+
+function p = gpos(col,row,w,h)
+    % Grid position (left->right). Generous spacing.
+    W=240; H=160; SX=100; SY=120;
+    x = 40 + (col-1)*(W+SX);
+    y = 40 + (row-1)*(H+SY);
+    p = [x y x+w y+h];
 end

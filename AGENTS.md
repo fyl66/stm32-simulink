@@ -85,6 +85,13 @@ codertarget.data.setParameterValue(m,'Runtime.BuildAction',    'Build, load and 
 - 脚本中一律使用 `add_line(m,a,b,'autorouting','on')`（本仓库封装为 `al(m,a,b)`），由 Simulink 自动正交布线。
 - 布局上让信号从左到右、从上到下流动，减少交叉。
 
+## 9c. 模型布局规范
+
+- 用网格定位 `gpos(col,row,w,h)`（列间距 100、行间距 120），禁止手写零散坐标。
+- 块尺寸建议：STM32 外设块 `240×160`、MATLAB Function `240×140`、Stateflow 图块 `300×240`。
+- 块内/块名的文字不得与相邻块或框线重叠；生成后用 `scripts/check_layout.m` 检查（块重叠应为 0、斜线应为 0）。
+- Stateflow：状态框 ≥ `240×120`、横向间距 ≥ 360；**动作放在状态的 `en:` 入口动作**，转移标签只写条件（避免标签过长互相重叠）。
+
 ## 10. 已知硬件注意
 
 - LED 等外设请串联限流电阻（330Ω~1kΩ），避免超过 GPIO 灌电流。
