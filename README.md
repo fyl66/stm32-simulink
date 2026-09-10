@@ -73,3 +73,12 @@ stm32_simulink/
 - [阶段 1：F103 点灯（编译烧录）](docs/01-F103点灯-编译烧录-Phase1.md)
 - [踩坑与注意事项](docs/02-踩坑与注意事项.md)
 - [新项目复刻清单](docs/03-新项目复刻清单.md)
+- [VCU 里程碑 1：ADC + CAN + 2kHz 空环 + 串口](docs/04-VCU里程碑1-ADC-CAN-串口.md)
+
+## 进行中：简化版 VCU（F103C8T6）
+
+在点灯基础上，用同一套工具链做简化 VCU（参考 Chain 架构）：
+- 硬件：`00_HW/F103C8T6/VCU_F103.ioc`（ADC1×8+DMA / CAN 500k / TIM1 PWM / USART1 / GPIO）
+- 模型：`models/VCU_M1.slx`（ADC → CAN 0x500 + USART1；CAN Read 0x200；2kHz 空环）
+- 构建：`run('E:\stm32_simulink\scripts\vcu_build.m')`（实测 RAM 2.1KB / FLASH 13.1KB）
+- 规划：详见 [docs/04](docs/04-VCU里程碑1-ADC-CAN-串口.md)；后续为外设 bring-up → 控制环 → 定点算法 → CAN 报文集成。

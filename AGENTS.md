@@ -32,6 +32,9 @@
 - `ProjectManager.NoMain=true`（由 Blockset 生成 `main`）。
 - GPIO 输出引脚需与模型 `Digital Port Write` 块一致。
 - 修改 `.ioc` 后，必须同步模型中的 `STM32CubeMX.DeviceId` 与 `STM32CubeMX.Family`（见第 5 条）。
+- **驱动层选择（`functionlistsort` 的 LL/HAL）必须匹配 Blockset 驱动**：CAN=`HAL`（`stm_can_hal.h`）、GPIO=`LL`、ADC=`LL`（`stm_adc_ll.h`）。选错会导致 `CAN_HandleTypeDef undeclared`。
+- **多通道 ADC 必须显式写 `ADC1.NbrOfConversion=N`**，否则报 `ADCNoOfConvMismatch`。
+- 改动 `.ioc` 后若 HAL 配置未更新，删除生成的 `Core/`、`Drivers/`、`STM32CubeIDE/`、`.mxproject`、`*.mat`、`script` 再重建。
 
 ## 5. 模型（`.slx`）目标配置
 
