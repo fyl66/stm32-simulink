@@ -1,0 +1,39 @@
+# ---- MATLAB / Simulink build artifacts ----
+slprj/
+*_ert_rtw/
+*.slxc
+codegen/
+
+# ---- Compiled outputs ----
+*.elf
+*.bin
+*.hex
+*.map
+*.o
+*.d
+*.dep
+
+# ---- STM32CubeMX generated code (keep the .ioc) ----
+00_HW/**/Core/
+00_HW/**/Drivers/
+00_HW/**/STM32CubeIDE/
+00_HW/**/*.mxproject
+00_HW/**/*.mat
+00_HW/**/script
+
+# ---- Local-only shims / toolbox patch backups ----
+questdlg.m
+*.p.orig
+*.p.disabled
+
+# ---- Editor / OS ----
+*.asv
+*.autosave
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ---- Secrets ----
+*.token
+*.pat
+.env
