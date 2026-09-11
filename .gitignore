@@ -26,6 +26,10 @@ questdlg.m
 *.p.orig
 *.p.disabled
 
+# ---- Layout render artifacts ----
+*_layout.png
+models/*.png
+
 # ---- Editor / OS ----
 *.asv
 *.autosave
