@@ -35,6 +35,10 @@
 - **驱动层选择（`functionlistsort` 的 LL/HAL）必须匹配 Blockset 驱动**：CAN=`HAL`（`stm_can_hal.h`）、GPIO=`LL`、ADC=`LL`（`stm_adc_ll.h`）。选错会导致 `CAN_HandleTypeDef undeclared`。
 - **多通道 ADC 必须显式写 `ADC1.NbrOfConversion=N`**，否则报 `ADCNoOfConvMismatch`。
 - 改动 `.ioc` 后若 HAL 配置未更新，删除生成的 `Core/`、`Drivers/`、`STM32CubeIDE/`、`.mxproject`、`*.mat`、`script` 再重建。
+- **多通道 ADC 需设 `ADCx.EOCSelection=ADC_EOC_SEQ_CONV`**，否则报 `ADCEOCOnEachConversion`。
+- **FreeRTOS（仅部分目标支持，F1 不支持）**：基准率必须 ≥1ms；CubeMX 用 CMSIS_V2、`configUSE_PREEMPTION=1`、`configTIMER_TASK_PRIORITY` > 基准优先级；HAL Timebase 用 TIM6（非 SysTick）；与 External Mode/PIL 互斥。
+- **块名不要与 HAL 符号冲突**（如 `UART`、`ADC`），改名如 `UART_TX`、`ADC1_BLK`。
+- **多速率模型**：跨速率用 Rate Transition；原子子系统设 `SystemSampleTime`，块采样率需继承或与子系统一致。
 
 ## 5. 模型（`.slx`）目标配置
 

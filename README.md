@@ -75,6 +75,7 @@ stm32_simulink/
 - [新项目复刻清单](docs/03-新项目复刻清单.md)
 - [VCU 里程碑 1：ADC + CAN + 2kHz 空环 + 串口](docs/04-VCU里程碑1-ADC-CAN-串口.md)
 - [VCU 里程碑 2：定点 + Stateflow + PWM + 完整 CAN](docs/05-VCU里程碑2-定点-Stateflow-CAN.md)
+- [F407VGT6 + FreeRTOS 移植（RTOS 架构验证）](docs/06-F407-FreeRTOS-移植.md)
 
 ## 进行中：简化版 VCU（F103C8T6）
 
